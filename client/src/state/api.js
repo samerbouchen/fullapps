@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5001" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3006" }),
   reducerPath: "adminApi",
   tagTypes: [
+     "Users",
     "User",
     "Products",
     "Customers",
@@ -15,15 +16,22 @@ export const api = createApi({
     "Dashboard",
   ],
   endpoints: (build) => ({
+    getUsers: build.query({
+      query: () => '/users',
+      providesTags: (res) => {
+        console.log("res => ", res)
+        return res
+      }
+    }),
     getUser: build.query({
       query: (id) => `general/user/${id}`,
       providesTags: ["User"],
     }),
     deleteUser: build.mutation({
       query: (id) => ({
-        url: `client/user/${id}`,
+        url: `/user/${id}`,
         method: "DELETE",
-        providesTags: ["Customers"],
+        providesTags: ["User"],
       }),
     }),
     getProducts: build.query({
@@ -81,4 +89,5 @@ export const {
   useGetUserPerformanceQuery,
   useGetDashboardQuery,
   useDeleteUserMutation,
+  useGetUsersQuery
 } = api;

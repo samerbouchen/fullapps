@@ -1,29 +1,40 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import { Box, useTheme } from "@mui/material";
-import { useGetCustomersQuery, useDeleteUserMutation } from "state/api";
+import {  useGetUsersQuery, useDeleteUserMutation } from "state/api";
 import Header from "components/Header";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import "./index.css";
 import { useDispatch } from "react-redux";
+import {deleteUser, getUsers} from "../../Api/api";
 const Chiefs = () => {
-  const dispatch = useDispatch();
   const theme = useTheme();
-  const { data, isLoading } = useGetCustomersQuery();
-  const [deleteUser, response] = useDeleteUserMutation();
+  const [users, setUsers] = useState([]);
+
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+      (async ()=> {
+         await getUsers().then(res => {{
+             setUsers(res.data)
+         }})
+      })()
+  }, []);
+
+  const handleDelete = async (id) => {
+      await deleteUser(id).then(res => {
+        setUsers(users.filter(v=> v.id !== id))
+      })
+  }
+
   const columns = [
     {
-      field: "_id",
+      field: "id",
       headerName: "ID",
       flex: 1,
     },
     {
-      field: "name",
-      headerName: "Name",
+      field: "fullName",
+      headerName: "Full Nale",
       flex: 0.5,
     },
     {
@@ -32,27 +43,8 @@ const Chiefs = () => {
       flex: 1,
     },
     {
-      field: "phoneNumber",
-      headerName: "Phone Number",
-      flex: 0.5,
-      renderCell: (params) => {
-        return params.value.replace(/^(\d{3})(\d{3})(\d{4})/, "($1)$2-$3");
-      },
-    },
-    {
-      field: "country",
-      headerName: "Country",
-      flex: 0.4,
-    },
-    {
-      field: "occupation",
-      headerName: "Occupation",
-      flex: 1,
-    },
-    {
       field: "role",
       headerName: "Role",
-      flex: 0.5,
     },
     {
       field: "action",
@@ -63,11 +55,7 @@ const Chiefs = () => {
           <ToggleOffIcon className="iconsDash" />
           <DeleteIcon
             className="iconsDash"
-            onClick={() =>
-              deleteUser(row._id).then(() => {
-                data();
-              })
-            }
+            onClick={() => handleDelete(row.id)}
           />
         </>
       ),
@@ -106,9 +94,9 @@ const Chiefs = () => {
         }}
       >
         <DataGrid
-          loading={isLoading || !data}
-          getRowId={(row) => row._id}
-          rows={data || []}
+          loading={false}
+          getRowId={(row) => row.id}
+          rows={users??[]}
           columns={columns}
         />
       </Box>

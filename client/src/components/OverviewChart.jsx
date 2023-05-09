@@ -44,7 +44,7 @@ const OverviewChart = ({ isDashboard = false, view }) => {
     return [[totalSalesLine], [totalUnitsLine]];
   }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!data || isLoading) return <iframe style={{width: "100%", height:"100%"}} title="parcautomobile - Page 2" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=08b4906b-f3bf-45f8-9360-1625079a1e4d&autoAuth=true&ctid=1158e2d5-dc24-41ad-abce-62841076dbde" frameborder="0" allowFullScreen="true"></iframe>;
+  if (!data || isLoading) return <iframe style={{width: "100%", height:"100%"}} title="parcautomobile - Page 2" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=08b4906b-f3bf-45f8-9360-1625079a1e4d&autoAuth=true&ctid=1158e2d5-dc24-41ad-abce-62841076dbde" frameBorder="0" allowFullScreen="true"></iframe>;
 
   return (
     <ResponsiveLine

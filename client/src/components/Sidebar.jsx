@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import {
   Box,
   Divider,
@@ -29,14 +29,15 @@ import {
   PieChartOutlined,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
 import profileImage from "assets/profile.jpeg";
+import getUserRole from "service/getUserRole";
 
-const navItems = [
-  {
+const navItems = [  {
     text: "Intercom Dashboard",
     icon: <HomeOutlined />,
+    path: "dashboard"
   },
   {
     text: "Chargée D  'affaire ",
@@ -46,20 +47,23 @@ const navItems = [
   {
     text: "Liste des Chargées D'affaire ",
     icon: <Groups2Outlined />,
+    path: 'chiefs'
   },
   {
     text: "Affectation   ",
     icon: <Groups2Outlined />,
+    path: 'affectaion'
   },
   {
     text: "Réclamation  ",
     icon: <Groups2Outlined />,
+    path: 'reclamation'
   },
   {
     text: " Contactez-nous",
     icon: <PublicOutlined />,
-  },
-];
+    path: "contact"
+  }];
 
 const Sidebar = ({
   user,
@@ -67,15 +71,22 @@ const Sidebar = ({
   isSidebarOpen,
   setIsSidebarOpen,
   isNonMobile,
+  token
 }) => {
   const { pathname } = useLocation();
   const [active, setActive] = useState("");
   const navigate = useNavigate();
   const theme = useTheme();
 
+  useEffect(()=> {
+    console.log(getUserRole(token))
+ 
+  },[])
   useEffect(() => {
     setActive(pathname.substring(1));
   }, [pathname]);
+
+
 
   return (
     <Box component="nav">
@@ -116,7 +127,15 @@ const Sidebar = ({
               </FlexBetween>
             </Box>
             <List>
-              {navItems.map(({ text, icon }) => {
+              {navItems.filter(({ text }) => {
+                  if(getUserRole(token) === "admin"){
+                      return true
+                  }
+                  else if (getUserRole(token) === "user"){
+                      return [" Contactez-nous","Réclamation  ","Intercom Dashboard"].includes(text)
+                  }
+                  return false
+              }).map(({ text, icon, path }) => {
                 if (!icon) {
                   return (
                     <Typography key={text} sx={{ m: "2.25rem 0 1rem 3rem" }}>
@@ -127,38 +146,38 @@ const Sidebar = ({
                 const lcText = text.toLowerCase();
 
                 return (
-                  <ListItem key={text} disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        navigate(`/${lcText}`);
-                        setActive(lcText);
-                      }}
-                      sx={{
-                        backgroundColor:
-                          active === lcText ? "#A3A0B3" : "transparent",
-                        color:
-                          active === lcText
-                            ? "white"
-                            : theme.palette.secondary[100],
-                      }}
-                    >
-                      <ListItemIcon
+                    <ListItem key={text} disablePadding>
+                      <ListItemButton
+                        onClick={() => {
+                          navigate({pathname:`${path}`});
+                          setActive(lcText);
+                        }}
                         sx={{
-                          ml: "2rem",
+                          backgroundColor:
+                            active === lcText ? "#A3A0B3" : "transparent",
                           color:
                             active === lcText
                               ? "white"
-                              : theme.palette.secondary[200],
+                              : theme.palette.secondary[100],
                         }}
                       >
-                        {icon}
-                      </ListItemIcon>
-                      <ListItemText primary={text} />
-                      {active === lcText && (
-                        <ChevronRightOutlined sx={{ ml: "auto" }} />
-                      )}
-                    </ListItemButton>
-                  </ListItem>
+                        <ListItemIcon
+                          sx={{
+                            ml: "2rem",
+                            color:
+                              active === lcText
+                                ? "white"
+                                : theme.palette.secondary[200],
+                          }}
+                        >
+                          {icon}
+                        </ListItemIcon>
+                        <ListItemText primary={text} />
+                        {active === lcText && (
+                          <ChevronRightOutlined sx={{ ml: "auto" }} />
+                        )}
+                      </ListItemButton>
+                    </ListItem>
                 );
               })}
             </List>
