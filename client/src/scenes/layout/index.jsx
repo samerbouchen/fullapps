@@ -6,7 +6,7 @@ import Navbar from "components/Navbar";
 import Sidebar from "components/Sidebar";
 import { useGetUserQuery } from "state/api";
 
-const Layout = ({token}) => {
+const Layout = ({token, logout}) => {
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const userId = useSelector((state) => state.global.userId);
@@ -25,6 +25,7 @@ const Layout = ({token}) => {
       <Box flexGrow={1}>
         <Navbar
           user={data || {}}
+          logout={logout}
           isSidebarOpen={isSidebarOpen}
           setIsSidebarOpen={setIsSidebarOpen}
         />

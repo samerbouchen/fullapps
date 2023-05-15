@@ -2,7 +2,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { BrowserRouter, Navigate, Route, Routes, redirect } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, redirect, useNavigate } from "react-router-dom";
 import { themeSettings } from "theme";
 import Layout from "scenes/layout";
 import Dashboard from "scenes/dashboard";
@@ -10,6 +10,8 @@ import Chiefs from "scenes/chiefs";
 import Geography from "scenes/geography";
 import Login from "scenes/login/login";
 import getUserRole from "service/getUserRole";
+import Reclamation from "components/Reclamation";
+import Affectation from "components/Affectation";
 
 function App() {
   const mode = useSelector((state) => state.global.mode);
@@ -21,6 +23,11 @@ function App() {
         setToken(localToken);
       }
   },[])
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+  }
   return (
     <div className="app">
       <BrowserRouter>
@@ -32,23 +39,25 @@ function App() {
                    : (  
                    <>
                     <Route path="/login" element={<Login setToken={setToken} token={token} />} />
-                    <Route element={<Layout token={token} />}>
+                    <Route element={<Layout token={token} logout={logout} />}>
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/reclamation" element={<Affectation />} />
                     {getUserRole(token) === "admin"
                       ?
                       <>
                         <Route path="/chiefs" element={<Chiefs />} />
+                        <Route path="/affectations" element={<Reclamation token={token} />} />
                       </>
                       : null
                       }
                     <Route path="/contact" element={<Geography />} />
-
                     </Route>
                    </>
 
                    )
                 }
+                <Route path="*" element={<Login setToken={setToken} token={token} />} />
                 </Routes>
             </ThemeProvider>
       </BrowserRouter>

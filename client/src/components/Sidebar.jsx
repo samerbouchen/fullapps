@@ -52,7 +52,7 @@ const navItems = [  {
   {
     text: "Affectation   ",
     icon: <Groups2Outlined />,
-    path: 'affectaion'
+    path: '/reclamation'
   },
   {
     text: "Réclamation  ",
